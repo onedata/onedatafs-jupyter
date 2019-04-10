@@ -1,9 +1,11 @@
-# OnedataFS
+# OnedataFS Jupyter Content Manager
+
+This is an implementation of the Jupyter Content Manager API, allowing to run
+Jupyter Notebooks directly on top of Onedata spaces.
 
 OnedataFS is a [PyFilesystem](https://www.pyfilesystem.org/) interface to
 [Onedata](https://onedata.org) virtual file system.
 
-As a PyFilesystem concrete class, [OnedataFS](https://github.com/onedata/fs-onedatafs/) allows you to work with Onedata in the same way as any other supported filesystem.
 
 ## Installing
 
@@ -13,29 +15,27 @@ You can install OnedataFS Jupyter Contents Manager from pip as follows:
 pip install onedatafs-jupyter
 ```
 
-## Opening a OnedataFS
+## Configuring Jupyter
 
-Open an OnedataFS by explicitly using the constructor:
-
-```python
-from fs_onedatafs import OnedataFS
-onedata_provider_host = "..."
-onedata_access_token = "..."
-odfs = OnedataFS(onedata_provider_host, onedata_access_token)
-```
-
-Or with a FS URL:
+In order to configure Jupyter Notebook to work directly in a Onedata Space,
+add the following lines to the Jupyter configuration file:
 
 ```python
-  from fs import open_fs
-  odfs = open_fs('onedatafs://HOST?token=...')
+import sys
+sys.path.append('/opt/oneclient/lib')
+
+c = get_config()
+
+c.NotebookApp.contents_manager_class = 'onedatafs_jupyter.onedata_contents_manager.OnedataFSContentsManager'
+c.OnedataFSContentsManager.oneprovider_host = u'oneprovider.example.com'
+c.OnedataFSContentsManager.access_token = u'MDAxN...'
 ```
 
-## Extended attributes
+If you don't have a config yet, create it using:
 
-Onedata FS supports in addition to standard PyFilesystem API operations
-on metadata via POSIX compatible extended attributes API.
-
+```bash
+jupyter notebook --generate-config
+```
 
 ## Documentation
 

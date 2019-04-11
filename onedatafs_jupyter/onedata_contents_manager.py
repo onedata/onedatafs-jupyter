@@ -2,11 +2,12 @@ import os
 from six import BytesIO
 import base64
 import nbformat
+import mimetypes
 
 from notebook.services.contents.manager import ContentsManager
 from notebook.services.contents.filecheckpoints import GenericFileCheckpoints
 
-from traitlets import default, Unicode, Instance, Any
+from traitlets import default, Unicode, Instance, Any, Bool
 
 from tornado import web
 
@@ -47,6 +48,34 @@ class OnedataFSContentsManager(ContentsManager):
         default_value=''
     )
 
+    insecure = Bool(
+        allow_none=True,
+        config=True,
+        help='Allow connection to Oneproviders without valid certificate',
+        default_value=False
+    )
+
+    no_buffer = Bool(
+        allow_none=True,
+        config=True,
+        help='Disable internal OnedataFS buffering.',
+        default_value=False
+    )
+
+    force_proxy_io = Bool(
+        allow_none=True,
+        config=True,
+        help='Force all data transfers to be made via Oneprovider.',
+        default_value=False
+    )
+
+    force_direct_io = Bool(
+        allow_none=True,
+        config=True,
+        help='Force all data transfer to be made directly to target storage.',
+        default_value=False
+    )
+
     post_save_hook = Any(None, config=True, allow_none=True,
         help="""Python callable or importstring thereof
         to be called on the path of a file just saved.
@@ -64,8 +93,7 @@ class OnedataFSContentsManager(ContentsManager):
 
     @default('odfs')
     def _odfs(self):
-    	print("Opening directory: " + join(abspath(self.space), self.path))
-        return OnedataFS(self.oneprovider_host.encode('ascii', 'replace'), self.access_token.encode('ascii', 'replace'), force_proxy_io=True, insecure=True).opendir(join(abspath(self.space), self.path))
+        return OnedataFS(self.oneprovider_host.encode('ascii', 'replace'), self.access_token.encode('ascii', 'replace'), no_buffer=self.no_buffer, force_proxy_io=self.force_proxy_io, insecure=self.insecure).opendir(join(abspath(self.space), self.path))
 
     @default('checkpoints_class')
     def _checkpoints_class(self):
@@ -451,7 +479,7 @@ class OnedataFSContentsManager(ContentsManager):
         if not self.odfs.isfile(path):
             raise HTTPError(400, "Cannot read non-file %s" % path)
 
-        with self.openbin(path, 'r') as f:
+        with self.odfs.openbin(path, 'r') as f:
             bcontent = f.read()
 
         if format is None or format == 'text':

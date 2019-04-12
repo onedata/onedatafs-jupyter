@@ -232,7 +232,7 @@ class OnedataFSContentsManager(ContentsManager):
 
         if not self.odfs.isdir(path):
             raise web.HTTPError(404, four_o_four)
-        # elif is_hidden(path, self.root_dir) and not self.allow_hidden:
+        # elif self.is_hidden(path, self.root_dir) and not self.allow_hidden:
             # self.log.info("Refusing to serve hidden directory %r, via 404 Error",
                 # path
             # )
@@ -355,11 +355,10 @@ class OnedataFSContentsManager(ContentsManager):
 
     def _save_directory(self, path, model, spath=''):
         """create a directory"""
-        if is_hidden(path, self.root_dir) and not self.allow_hidden:
-            raise web.HTTPError(400, u'Cannot create hidden directory %r' % path)
+        # if self.is_hidden(path, self.root_dir) and not self.allow_hidden:
+            # raise web.HTTPError(400, u'Cannot create hidden directory %r' % path)
         if not self.odfs.exists(path):
-            with self.perm_to_403():
-                self.odfs.makedir(path)
+            self.odfs.makedir(path)
         elif not self.odfs.isdir(path):
             raise web.HTTPError(400, u'Not a directory: %s' % (path))
         else:
@@ -446,18 +445,18 @@ class OnedataFSContentsManager(ContentsManager):
             # If use_atomic_writing is enabled, we'll guess that it was also
             # enabled when this notebook was written and look for a valid
             # atomic intermediate.
-            tmp_path = path_to_intermediate(path)
+            #tmp_path = path_to_intermediate(path)
 
-            if not self.use_atomic_writing or not self.odfs.exists(tmp_path):
-                raise HTTPError(
-                    400,
-                    u"Unreadable Notebook: %s %r" % (path, e_orig),
-                )
+            #if not self.use_atomic_writing or not self.odfs.exists(tmp_path):
+            #   raise HTTPError(
+            #        400,
+            #       u"Unreadable Notebook: %s %r" % (path, e_orig),
+            #    )
 
             # Move the bad file aside, restore the intermediate, and try again.
-            invalid_file = path_to_invalid(path)
-            replace_file(path, invalid_file)
-            replace_file(tmp_path, path)
+            # invalid_file = path_to_invalid(path)
+            # replace_file(path, invalid_file)
+            # replace_file(tmp_path, path)
             return self._read_notebook(path, as_version)
 
     def _save_notebook(self, path, nb):

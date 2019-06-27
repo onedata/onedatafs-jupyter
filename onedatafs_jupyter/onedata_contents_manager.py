@@ -453,7 +453,10 @@ class OnedataFSContentsManager(ContentsManager):
                     nb, version=nbformat.NO_CONVERT).encode('utf8')
             self.log.warning("Saving notebook model (length=%d)\n%s",
                              len(nb_string), nb_string.decode('utf8'))
-            nb_bytes = bytes(nb_string) if six.PY2 else bytes(nb_string, 'utf8')
+            if six.PY2:
+                nb_bytes = bytes(nb_string)
+            else:
+                nb_bytes = nb_string
             self.odfs.create(path, wipe=True)
             truncated_size = len(self.odfs.readbytes(path))
             if truncated_size > 0:
@@ -463,6 +466,10 @@ class OnedataFSContentsManager(ContentsManager):
         except ValueError as error:
             self.log.error("Tried to save invalid JSON to model: %s",
                            nb_string.decode('utf8'))
+            raise error
+        except TypeError as error:
+            self.log.error("Failed encoding the model: %s",
+                           str(nb_string))
             raise error
 
     def _read_file(self, path, format):

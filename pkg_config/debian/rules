@@ -8,7 +8,7 @@ PYTHON2_VERSIONS = $(shell pyversions -r)
 PYTHON3_VERSIONS = $(shell py3versions -r)
 
 export PYBUILD_DISABLE=test
-export PYBUILD_NAME=fs-plugin-onedatafs
+export PYBUILD_NAME=onedatafs-jupyter
 
 override_dh_auto_clean:
 		dh_auto_clean

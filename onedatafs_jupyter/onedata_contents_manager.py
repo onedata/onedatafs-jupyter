@@ -11,13 +11,13 @@ from traitlets import default, Unicode, Instance, Any, Bool
 
 from tornado import web
 
-from fs_onedatafs import OnedataFS, OnedataSubFS
+from fs.onedatafs import OnedataFS, OnedataSubFS
 
 from fs.path import abspath, join
 
-try: #PY3
+if six.PY3:
     from base64 import encodebytes, decodebytes
-except ImportError: #PY2
+else:
     from base64 import encodestring as encodebytes, decodestring as decodebytes
 
 

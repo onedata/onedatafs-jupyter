@@ -25,7 +25,7 @@ with open("README.md", "rt") as f:
 REQUIREMENTS = ["fs", "six"]
 
 setup(
-    name="onedatafs.jupyter",
+    name="onedatafs_jupyter",
     author="Bartek Kryza",
     author_email="bkryza@gmail.com",
     classifiers=CLASSIFIERS,
@@ -33,7 +33,7 @@ setup(
     install_requires=REQUIREMENTS,
     license="MIT",
     long_description=DESCRIPTION,
-    packages=find_packages(),
+    packages=["onedatafs_jupyter"],
     keywords=["Jupyter", "Onedata", "oneclient"],
     platforms=["linux"],
     test_suite="nose.collector",

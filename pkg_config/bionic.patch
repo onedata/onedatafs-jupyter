@@ -1,17 +1,17 @@
-diff --git a/debian/python-fs-plugin-onedatafs.install b/debian/python-fs-plugin-onedatafs.install
+diff --git a/debian/python-onedatafs-jupyter.install b/debian/python-onedatafs-jupyter.install
 index 884864b..1b31341 100644
---- a/debian/python-fs-plugin-onedatafs.install
-+++ b/debian/python-fs-plugin-onedatafs.install
+--- a/debian/python-onedatafs-jupyter.install
++++ b/debian/python-onedatafs-jupyter.install
 @@ -1,2 +1,2 @@
--.pybuild/pythonX.Y_2.7/build/fs/onedatafs/* usr/lib/python2.7/dist-packages/fs/onedatafs/
-+.pybuild/cpython2_2.7_fs-plugin-onedatafs/build/fs/onedatafs/* usr/lib/python2.7/dist-packages/fs/onedatafs/
- pkg_config/data/__init__.py usr/lib/python2.7/dist-packages/fs/
-diff --git a/debian/python3-fs-plugin-onedatafs.install b/debian/python3-fs-plugin-onedatafs.install
+-.pybuild/pythonX.Y_2.7/build/onedatafs/jupyter/* usr/lib/python2.7/dist-packages/onedatafs/jupyter
++.pybuild/cpython2_2.7_onedatafs-jupyter/build/onedatafs/jupyter/* usr/lib/python2.7/dist-packages/onedatafs/jupyter
+ pkg_config/data/__init__.py usr/lib/python2.7/dist-packages/onedatafs/
+diff --git a/debian/python3-onedatafs-jupyter.install b/debian/python3-onedatafs-jupyter.install
 index 8949d75..452be65 100644
---- a/debian/python3-fs-plugin-onedatafs.install
-+++ b/debian/python3-fs-plugin-onedatafs.install
+--- a/debian/python3-onedatafs-jupyter.install
++++ b/debian/python3-onedatafs-jupyter.install
 @@ -1,2 +1,2 @@
--.pybuild/pythonX.Y_3.5/build/fs/onedatafs/* usr/lib/python3.5/dist-packages/fs/onedatafs/
--pkg_config/data/__init__.py usr/lib/python3.5/dist-packages/fs/
-+.pybuild/cpython3_3.6_fs-plugin-onedatafs/build/fs/onedatafs/* usr/lib/python3.6/dist-packages/fs/onedatafs/
-+pkg_config/data/__init__.py usr/lib/python3.6/dist-packages/fs/
+-.pybuild/pythonX.Y_3.5/build/onedatafs/jupyter/* usr/lib/python3.5/dist-packages/onedatafs/jupyter
+-pkg_config/data/__init__.py usr/lib/python3.5/dist-packages/onedatafs/
++.pybuild/cpython3_3.6_onedatafs-jupyter/build/onedatafs/jupyter/* usr/lib/python3.6/dist-packages/onedatafs/jupyter
++pkg_config/data/__init__.py usr/lib/python3.6/dist-packages/onedatafs/

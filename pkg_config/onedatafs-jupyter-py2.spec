@@ -11,7 +11,7 @@
 Summary: Onedata Jupyter Contents Manager implementation
 Name: %{?scl_prefix}python2-onedatafs-jupyter
 Version: %{version}
-Release: 1%{?dist}
+Release: {{build}}%{?dist}
 Source0: onedatafs-jupyter-%{version}.tar.gz
 License: MIT
 Group: Development/Libraries

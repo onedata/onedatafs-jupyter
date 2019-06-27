@@ -79,12 +79,12 @@ rpm: check_distribution package/$(PKG_ID).tar.gz
 	sed -i "s/{{fsonedatafs_version}}/$(FSONEDATAFS_VERSION)/g" package/onedatafs-jupyter-py3.spec
 	sed -i "s/{{build}}/$(PKG_BUILD)/g" package/onedatafs-jupyter-py3.spec
 
-	mock --root $(DISTRIBUTION) --buildsrpm --spec package/jupyter-onedatafs-py2.spec --resultdir=package/packages \
+	mock --root $(DISTRIBUTION) --buildsrpm --spec package/onedatafs-jupyter-py2.spec --resultdir=package/packages \
 		--sources package
 	mock --root $(DISTRIBUTION) --resultdir=package/packages \
 		--rebuild package/packages/onedata$(RELEASE)-python2-$(PKG_ID)*.src.rpm
 
-	mock --root $(DISTRIBUTION) --buildsrpm --spec package/fs-onedatafs-py3.spec --resultdir=package/packages \
+	mock --root $(DISTRIBUTION) --buildsrpm --spec package/onedatafs-jupyter-py3.spec --resultdir=package/packages \
 		--sources package
 	mock --root $(DISTRIBUTION) --resultdir=package/packages \
 		--rebuild package/packages/onedata$(RELEASE)-python3-$(PKG_ID)*.src.rpm

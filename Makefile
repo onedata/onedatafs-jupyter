@@ -8,12 +8,14 @@ DOCKER_REG_PASSWORD   ?= ""
 DOCKER_BASE_IMAGE     ?= "ubuntu:16.04"
 DOCKER_DEV_BASE_IMAGE ?= "onedata/worker:1802-1"
 
-PKG_REVISION      ?= $(shell git describe --tags --always)
-PKG_VERSION       ?= $(shell git describe --tags --always | tr - .)
-ONECLIENT_VERSION ?= $(PKG_VERSION)
-PKG_COMMIT        ?= $(shell git rev-parse HEAD)
-PKG_BUILD         ?= 1
-PKG_ID             = onedatafs-jupyter-$(PKG_VERSION)
+PKG_REVISION              ?= $(shell git describe --tags --always)
+PKG_VERSION               ?= $(shell git describe --tags --always | tr - .)
+ONECLIENT_VERSION         ?= $(PKG_VERSION)
+ONEDATAFS_JUPYTER_VERSION ?= $(PKG_VERSION)
+FSONEDATAFS_VERSION       ?= $(PKG_VERSION)
+PKG_COMMIT                ?= $(shell git rev-parse HEAD)
+PKG_BUILD                 ?= 1
+PKG_ID                     = onedatafs-jupyter-$(PKG_VERSION)
 
 .PHONY: check_distribution
 check_distribution:
@@ -107,3 +109,14 @@ deb: check_distribution package/$(PKG_ID).tar.gz
 	mv package/*$(PKG_VERSION)-$(PKG_BUILD)*.dsc package/packages/
 	mv package/*$(PKG_VERSION)-$(PKG_BUILD)*_amd64.changes package/packages/
 	-mv package/*$(PKG_VERSION)-$(PKG_BUILD)*.debian.tar.xz package/packages/ || true
+
+.PHONY: docker
+docker:
+	./docker_build.py --repository $(DOCKER_REG_NAME) --user $(DOCKER_REG_USER) \
+                      --password $(DOCKER_REG_PASSWORD) \
+                      --build-arg RELEASE_TYPE=$(DOCKER_RELEASE) \
+                      --build-arg RELEASE=$(RELEASE) \
+                      --build-arg ONEDATAFS_JUPYTER_VERSION=$(PKG_VERSION) \
+                      --build-arg ONECLIENT_VERSION=$(ONECLIENT_VERSION) \
+                      --build-arg FSONEDATAFS_VERSION=$(FSONEDATAFS_VERSION) \
+                      --name onedatafs-jupyter --publish --remove docker

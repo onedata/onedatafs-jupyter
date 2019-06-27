@@ -4,9 +4,10 @@ MAINTAINER Bartek Kryza <bkryza@gmail.com>
 # Build arguments
 ARG RELEASE_TYPE
 ARG RELEASE="1902"
-ARG VERSION=""
 ARG DISTRIBUTION="bionic"
+ARG ONECLIENT_VERSION=""
 ARG FSONEDATAFS_VERSION=""
+ARG ONEDATAFS_JUPYTER_VERSION=""
 
 # Get the image up to date and install utility tools
 RUN apt-get -y update && \
@@ -32,9 +33,9 @@ RUN case ${RELEASE_TYPE} in \
             curl -O http://onedata-dev-packages.cloud.plgrid.pl/oneclient-${RELEASE}.sh; \
             ;; \
         esac && \
-        sh oneclient-${RELEASE}.sh ${ONECLIENT_PACKAGE}=${VERSION}-1~${DISTRIBUTION} && \
-        apt-get -y install python-onedatafs=${VERSION}-1~${DISTRIBUTION} \
-                           python3-onedatafs=${VERSION}-1~${DISTRIBUTION} \
+        sh oneclient-${RELEASE}.sh ${ONECLIENT_PACKAGE}=${ONECLIENT_VERSION}-1~${DISTRIBUTION} && \
+        apt-get -y install python-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} \
+                           python3-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} \
                            python-fs-plugin-onedatafs=${FSONEDATAFS_VERSION}-1~${DISTRIBUTION} \
                            python3-fs-plugin-onedatafs=${FSONEDATAFS_VERSION}-1~${DISTRIBUTION} \
                            python-onedatafs-jupyter=${ONEDATAFS_JUPYTER_VERSION}-1~${DISTRIBUTION} \

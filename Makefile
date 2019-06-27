@@ -25,6 +25,10 @@ else
 endif
 
 
+submodules:
+	git submodule sync --recursive ${submodule}
+	git submodule update --init --recursive ${submodule}
+
 .PHONY: readme
 readme:
 	pandoc --from=markdown --to=rst --output=README.rst README.md
@@ -34,13 +38,13 @@ release: readme
 	python setup.py sdist bdist_wheel
 
 .PHONY: test
-	test:
-		tox -e unit,flake8
+test:
+	tox -e unit,flake8
 
 .PHONY: clean
-	clean:
-		python setup.py clean --all
-			rm -rf package
+clean:
+	python setup.py clean --all
+	rm -rf package
 
 .PHONY: docs
 docs:

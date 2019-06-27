@@ -69,15 +69,14 @@ rpm: check_distribution package/$(PKG_ID).tar.gz
 
 	cp pkg_config/onedatafs-jupyter-py2.spec package/onedatafs-jupyter-py2.spec
 	cp pkg_config/onedatafs-jupyter-py3.spec package/onedatafs-jupyter-py3.spec
-	cp pkg_config/data/__init__.py package/__init__.py
 
 	patch -d package/ -p1 -i $(PKG_ID)/pkg_config/$(DISTRIBUTION).patch
 
 	sed -i "s/{{version}}/$(PKG_VERSION)/g" package/onedatafs-jupyter-py2.spec
-	sed -i "s/{{onedatafs_version}}/$(ONECLIENT_VERSION)/g" package/onedatafs-jupyter-py2.spec
+	sed -i "s/{{fsonedatafs_version}}/$(FSONEDATAFS_VERSION)/g" package/onedatafs-jupyter-py2.spec
 	sed -i "s/{{build}}/$(PKG_BUILD)/g" package/onedatafs-jupyter-py2.spec
 	sed -i "s/{{version}}/$(PKG_VERSION)/g" package/onedatafs-jupyter-py3.spec
-	sed -i "s/{{onedatafs_version}}/$(ONECLIENT_VERSION)/g" package/onedatafs-jupyter-py3.spec
+	sed -i "s/{{fsonedatafs_version}}/$(FSONEDATAFS_VERSION)/g" package/onedatafs-jupyter-py3.spec
 	sed -i "s/{{build}}/$(PKG_BUILD)/g" package/onedatafs-jupyter-py3.spec
 
 	mock --root $(DISTRIBUTION) --buildsrpm --spec package/jupyter-onedatafs-py2.spec --resultdir=package/packages \

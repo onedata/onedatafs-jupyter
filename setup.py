@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+"""Onedata filesystem Jupyter Contents Manager."""
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 __version__ = "19.02.0.0"
 

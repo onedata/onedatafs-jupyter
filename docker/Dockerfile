@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:bionic-20190612
 MAINTAINER Bartek Kryza <bkryza@gmail.com>
 
 # Build arguments

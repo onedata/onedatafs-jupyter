@@ -41,7 +41,7 @@ release: readme
 
 .PHONY: test
 test:
-	tox -e unit,flake8
+	tox -e flake8
 
 .PHONY: clean
 clean:

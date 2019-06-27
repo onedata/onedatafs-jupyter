@@ -33,9 +33,8 @@ RUN case ${RELEASE_TYPE} in \
             curl -O http://onedata-dev-packages.cloud.plgrid.pl/oneclient-${RELEASE}.sh; \
             ;; \
         esac && \
-        sh oneclient-${RELEASE}.sh ${ONECLIENT_PACKAGE}=${ONECLIENT_VERSION}-1~${DISTRIBUTION} && \
-        apt-get -y install python-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} \
-                           python3-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} \
+        sh oneclient-${RELEASE}.sh python-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} && \
+        apt-get -y install python3-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} \
                            python-fs-plugin-onedatafs=${FSONEDATAFS_VERSION}-1~${DISTRIBUTION} \
                            python3-fs-plugin-onedatafs=${FSONEDATAFS_VERSION}-1~${DISTRIBUTION} \
                            python-onedatafs-jupyter=${ONEDATAFS_JUPYTER_VERSION}-1~${DISTRIBUTION} \

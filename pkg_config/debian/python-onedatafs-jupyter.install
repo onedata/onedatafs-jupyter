@@ -1,0 +1,2 @@
+.pybuild/pythonX.Y_2.7/build/onedatafs/jupyter/* usr/lib/python2.7/dist-packages/onedatafs/jupyter
+pkg_config/data/__init__.py usr/lib/python2.7/dist-packages/onedatafs

@@ -1,0 +1,7 @@
+onedatafs-jupyter ({{version}}-1~{{distribution}}) {{distribution}}; urgency=low
+
+  * Build from {{version}}
+
+ -- Onedata Package Maintainer <support@onedata.org>  {{date}}
+
+

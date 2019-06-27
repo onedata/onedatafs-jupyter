@@ -1,5 +1,5 @@
 fs
-fs_onedatafs
+fs.onedatafs
 traitlets
 six
 

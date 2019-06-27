@@ -2,8 +2,7 @@
 
 from setuptools import setup, find_packages
 
-with open("onedatafs_jupyter/_version.py") as f:
-    exec(f.read())
+__version__ = "19.02.0.0"
 
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",
@@ -20,13 +19,13 @@ CLASSIFIERS = [
     "Topic :: System :: Filesystems",
 ]
 
-with open("README.rst", "rt") as f:
+with open("README.md", "rt") as f:
     DESCRIPTION = f.read()
 
-REQUIREMENTS = ["fs~=2.2", "six~=1.10"]
+REQUIREMENTS = ["fs", "six"]
 
 setup(
-    name="onedatafs-jupyter",
+    name="onedatafs.jupyter",
     author="Bartek Kryza",
     author_email="bkryza@gmail.com",
     classifiers=CLASSIFIERS,

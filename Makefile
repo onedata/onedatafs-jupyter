@@ -26,7 +26,7 @@ else
 	@echo "Building package for distribution $(DISTRIBUTION)"
 endif
 
-
+.PHONY: submodules
 submodules:
 	git submodule sync --recursive ${submodule}
 	git submodule update --init --recursive ${submodule}

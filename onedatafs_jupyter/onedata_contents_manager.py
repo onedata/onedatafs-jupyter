@@ -6,10 +6,12 @@ import errno
 import mimetypes
 import os
 import time
+import uuid
 
 import nbformat
 
-from notebook.services.contents.filecheckpoints import GenericFileCheckpoints
+from notebook.services.contents.checkpoints import Checkpoints, \
+        GenericCheckpointsMixin
 from notebook.services.contents.manager import ContentsManager
 
 import six
@@ -19,12 +21,180 @@ from tornado import web
 from traitlets import Any, Bool, Instance, Unicode, default
 
 from fs.onedatafs import OnedataFS, OnedataSubFS  # noqa
-from fs.path import abspath, join
+from fs.path import abspath, basename, dirname, join, splitext
 
 if six.PY3:
     from base64 import encodebytes, decodebytes  # noqa
 else:
     from base64 import encodestring as encodebytes, decodestring as decodebytes
+
+
+class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
+    """
+    Implements the Jupyter Notebook checkpoints interface.
+
+    Enables storing the temporary checkpoints for saved files in
+    a hidden directory in a users spaces.
+    """
+
+    checkpoint_dir = Unicode(
+        ".ipynb_checkpoints",
+        config=True,
+        help="""The directory name in which to keep file checkpoints
+            This is a path relative to the file"s own directory.
+            By default, it is .ipynb_checkpoints
+            """,
+    )
+    checkpoint_bucket = Unicode(
+        "", config=True, help="The bucket name where to keep file checkpoints."
+                              " If empty, the current bucket is used."
+    )
+
+    def create_file_checkpoint(self, content, format, path):
+        """
+        Create a checkpoint of the current state of a file.
+
+        Returns a checkpoint model for the new checkpoint.
+        """
+        if not self.parent.odfs.exists(self._get_checkpoint_dir(path)):
+            self.parent.odfs.makedir(self._get_checkpoint_dir(path))
+
+        checkpoint_id = str(uuid.uuid4())
+        cp = self._get_checkpoint_path(checkpoint_id, path)
+        self.log.debug("Creating file checkpoint %s for %s as %s",
+                       checkpoint_id, path, cp)
+        self.parent._save_file(cp, content, format)
+        return {
+            "id": checkpoint_id,
+            "last_modified":
+                self.parent.odfs.getinfo(cp, namespaces=['details']).modified,
+        }
+
+    def create_notebook_checkpoint(self, nb, path):
+        """
+        Create a checkpoint of the current state of a file.
+
+        Returns a checkpoint model for the new checkpoint.
+        """
+        if not self.parent.odfs.exists(self._get_checkpoint_dir(path)):
+            self.parent.odfs.makedir(self._get_checkpoint_dir(path))
+
+        checkpoint_id = str(uuid.uuid4())
+        cp = self._get_checkpoint_path(checkpoint_id, path)
+        self.log.debug("Creating notebook checkpoint %s for %s as %s",
+                       checkpoint_id, path, cp)
+        self.parent._save_notebook(cp, nb)
+        return {
+            "id": checkpoint_id,
+            "last_modified":
+                self.parent.odfs.getinfo(cp, namespaces=['details']).modified,
+        }
+
+    def get_file_checkpoint(self, checkpoint_id, path):
+        """
+        Get the content of a checkpoint for a non-notebook file.
+
+        Returns a dict of the form:
+         {
+             "type": "file",
+             "content": <str>,
+             "format": {"text","base64"},
+         }
+        """
+        self.log.info("Restoring file %s from checkpoint %s",
+                      path, checkpoint_id)
+        cp = self._get_checkpoint_path(checkpoint_id, path)
+        if not self.parent.odfs.file_exists(cp):
+            raise web.HTTPError(404, u"No such file checkpoint: %s for %s" % (
+                checkpoint_id, path))
+        content, format = self.parent._read_file(cp, None)
+        return {
+            "type": "file",
+            "content": content,
+            "format": format
+        }
+
+    def get_notebook_checkpoint(self, checkpoint_id, path):
+        """
+        Get the content of a checkpoint for a notebook.
+
+        Returns a dict of the form:
+        {
+            "type": "notebook",
+            "content": <output of nbformat.read>,
+        }
+        """
+        self.log.info("Restoring notebook %s from checkpoint %s",
+                      path, checkpoint_id)
+        cp = self._get_checkpoint_path(checkpoint_id, path)
+        if not self.parent.odfs.exists(cp):
+            raise web.HTTPError(
+                404, u"No such notebook checkpoint: %s for %s" % (
+                    checkpoint_id, path))
+        nb = self.parent._read_notebook(cp)
+        return {
+            "type": "notebook",
+            "content": nb
+        }
+
+    def rename_checkpoint(self, checkpoint_id, old_path, new_path):
+        """Rename a single checkpoint from old_path to new_path."""
+        self.log.info("Renaming checkpoint %s from %s to %s" % (
+            checkpoint_id, old_path, new_path))
+        old_cp = self._get_checkpoint_path(checkpoint_id, old_path)
+        new_cp = self._get_checkpoint_path(checkpoint_id, new_path)
+        self.parent.rename_file(old_cp, new_cp)
+
+    def delete_checkpoint(self, checkpoint_id, path):
+        """Delete a checkpoint for a file."""
+        cp = self._get_checkpoint_path(checkpoint_id, path)
+        self.log.info("Deleting checkpoint %s from %s" % (checkpoint_id, cp))
+        self.parent.delete_file(cp)
+
+    def list_checkpoints(self, path):
+        """Return a list of checkpoints for a given file."""
+        self.log.info("Listing checkpoints at %s" % (path))
+
+        checkpoints = []
+
+        checkpoint_dir = self._get_checkpoint_dir(path)
+        if not self.parent.odfs.exists(checkpoint_dir):
+            return checkpoints
+
+        checkpoint_dirents = self.parent.odfs.listdir(checkpoint_dir)
+        for file in checkpoint_dirents:
+            file_name, checkpoint_id = splitext(file)
+
+            # Consider only checkpoints for the current file
+            if not file.startswith(file_name):
+                continue
+
+            # At this point checkpoint_id contains the preceding '.'
+            # while length of uuid4 is 36 characters
+            if len(str(checkpoint_id)) != 37:
+                self.log.warning("Invalid checkpoint extension: %s" % (file))
+                continue
+
+            checkpoint_id = checkpoint_id[1:]
+
+            info = self.parent.odfs.getinfo(join(checkpoint_dir, file),
+                                            namespaces=['details'])
+            checkpoints.append({
+                "id": str(checkpoint_id),
+                "last_modified": info.modified
+                })
+
+        checkpoints.sort(key=lambda c: c["last_modified"], reverse=False)
+        self.log.debug("list_checkpoints: %s: %s", path, checkpoints)
+        return checkpoints
+
+    def _get_checkpoint_path(self, checkpoint_id, path):
+        file_name = basename(path)
+        dir_path = self._get_checkpoint_dir(path)
+        return join(dir_path, file_name+"."+checkpoint_id)
+
+    def _get_checkpoint_dir(self, path):
+        return join(dirname(path), self.checkpoint_dir)
 
 
 class OnedataFSContentsManager(ContentsManager):
@@ -100,14 +270,8 @@ class OnedataFSContentsManager(ContentsManager):
                          insecure=self.insecure).opendir(abs_path)
 
     @default('checkpoints_class')
-    def _checkpoints_class(self):
-        return GenericFileCheckpoints
-
-    @default('checkpoints_kwargs')
-    def _checkpoints_kwargs(self):
-        return {
-            'root_dir': u'/.ipynb_checkpoints'
-        }
+    def _checkpoints_class_default(self):
+        return OnedataFSFileCheckpoints
 
     def dir_exists(self, path):
         """
@@ -173,7 +337,10 @@ class OnedataFSContentsManager(ContentsManager):
 
     def delete_file(self, path, allow_non_empty=False):
         """Delete the file or directory at path."""
-        self.odfs.remove(path)
+        if self.odfs.isdir(path):
+            self.odfs.removetree(path)
+        else:
+            self.odfs.remove(path)
 
     def rename_file(self, old_path, new_path):
         """
@@ -193,12 +360,13 @@ class OnedataFSContentsManager(ContentsManager):
             last_modified = info.modified
             created = info.created
         except Exception:
+            self.log.warning("Cannot get info of file: %s" % (path))
             size = None
             created = datetime.datetime.now()
             last_modified = created
 
         model = {}
-        model['name'] = path.rsplit('/', 1)[-1]
+        model['name'] = basename(path)
         model['path'] = path
         model['last_modified'] = last_modified
         model['created'] = created
@@ -212,6 +380,11 @@ class OnedataFSContentsManager(ContentsManager):
         except OSError:
             self.log.error("Failed to check write permissions on %s", path)
             model['writable'] = False
+
+        self.log.info("Base notebook model last modified date: %s",
+                      str(last_modified))
+        self.log.info("Base notebook model now date: %s",
+                      str(datetime.datetime.now()))
 
         self.log.info("Created base notebook model: %s", str(model))
 
@@ -340,6 +513,7 @@ class OnedataFSContentsManager(ContentsManager):
                         reason='bad type')
             model = self._dir_model(path, content=content)
         elif type == 'notebook' or (type is None and path.endswith('.ipynb')):
+            self.log.debug("Getting notebook from file %s" % (path))
             model = self._notebook_model(path, content=content)
         else:
             if type == 'directory':
@@ -400,9 +574,13 @@ class OnedataFSContentsManager(ContentsManager):
         if validation_message:
             model['message'] = validation_message
 
-        model['last_modified'] = datetime.datetime.now()
-
         self.run_post_save_hook(model=model, os_path=path)
+
+        # Update the creation date in the notebook model, in case the
+        # Oneprovider has a time shift of few seconds with respect to th
+        # client machine
+        model['last_modified'] = self.odfs.getinfo(
+                path, namespaces=['details']).modified
 
         return model
 
@@ -436,7 +614,6 @@ class OnedataFSContentsManager(ContentsManager):
             nb_bytes = self.odfs.readbytes(path)
             notebook = nbformat.reads(nb_bytes.decode('utf8'),
                                       as_version=as_version)
-            # notebook = json.loads(nb_bytes.decode('utf8'))
             self.log.warning("Decoded notebook from file: %s", notebook)
             return notebook
         except Exception as e:
@@ -451,18 +628,29 @@ class OnedataFSContentsManager(ContentsManager):
         try:
             nb_string = nbformat.writes(
                     nb, version=nbformat.NO_CONVERT).encode('utf8')
-            self.log.warning("Saving notebook model (length=%d)\n%s",
-                             len(nb_string), nb_string.decode('utf8'))
+
             if six.PY2:
                 nb_bytes = bytes(nb_string)
             else:
                 nb_bytes = nb_string
+
             self.odfs.create(path, wipe=True)
+
             truncated_size = len(self.odfs.readbytes(path))
             if truncated_size > 0:
                 self.log.error("File %s not empty after truncate: %d!!!",
                                path, truncated_size)
+
             self.odfs.writebytes(path, nb_bytes)
+
+            # Update the notebook mtime to subsecond accuracy
+            # to avoid the warning about the notebook being changed on disk
+            self.odfs.setinfo(path, {'details': {'modified': time.time()}})
+
+            self.log.debug("Notebook saved at: %s" % (
+                str(datetime.datetime.now())))
+            self.log.debug("Notebook file modified date: %s" % (
+                str(self.odfs.getinfo(path, namespaces=['details']).modified)))
         except ValueError as error:
             self.log.error("Tried to save invalid JSON to model: %s",
                            nb_string.decode('utf8'))

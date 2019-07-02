@@ -40,19 +40,19 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
     checkpoint_dir = Unicode(
         ".ipynb_checkpoints",
         config=True,
-        help="""The directory name in which to keep file checkpoints
-            This is a path relative to the file"s own directory.
-            By default, it is .ipynb_checkpoints
+        help="""The directory name which will store checkpoints.
+            This path is relative to the current file directory.
             """,
-    )
-    checkpoint_bucket = Unicode(
-        "", config=True, help="The bucket name where to keep file checkpoints."
-                              " If empty, the current bucket is used."
     )
 
     def create_file_checkpoint(self, content, format, path):
         """
-        Create a checkpoint of the current state of a file.
+        Create a checkpoint for a regular file.
+
+        :param str content: File contents.
+        :param str format: The format of the file, can be `text` or `base64`.
+        :param str path: The full path to the file, for which the checkpoint
+                         should be created.
 
         Returns a checkpoint model for the new checkpoint.
         """
@@ -72,7 +72,10 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
 
     def create_notebook_checkpoint(self, nb, path):
         """
-        Create a checkpoint of the current state of a file.
+        Create a checkpoint of the current state of a notebook.
+
+        :param dict nb: The notebok model.
+        :param str path: The full path to the notebook file.
 
         Returns a checkpoint model for the new checkpoint.
         """
@@ -94,11 +97,15 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
         """
         Get the content of a checkpoint for a non-notebook file.
 
+        :param str checkpoint_id: A 36 character uuid4 type identifier.
+        :param str path: The path to the file from which the checkpoint was
+                         created.
+
         Returns a dict of the form:
          {
              "type": "file",
              "content": <str>,
-             "format": {"text","base64"},
+             "format": <"text"|"base64">,
          }
         """
         self.log.info("Restoring file %s from checkpoint %s",
@@ -118,10 +125,14 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
         """
         Get the content of a checkpoint for a notebook.
 
+        :param str checkpoint_id: A 36 character uuid4 type identifier.
+        :param str path: The path to the file from which the checkpoint was
+                         created.
+
         Returns a dict of the form:
         {
             "type": "notebook",
-            "content": <output of nbformat.read>,
+            "content": <dict>,
         }
         """
         self.log.info("Restoring notebook %s from checkpoint %s",
@@ -138,7 +149,15 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
         }
 
     def rename_checkpoint(self, checkpoint_id, old_path, new_path):
-        """Rename a single checkpoint from old_path to new_path."""
+        """
+        Rename a single checkpoint from old_path to new_path.
+
+        :param str checkpoint_id: A 36 character uuid4 type identifier.
+        :param str old_path: The old path to the file, from which checkpoint
+                             was created.
+        :param str new_path: The new path to the file, from which checkpoint
+                             was created.
+        """
         self.log.info("Renaming checkpoint %s from %s to %s" % (
             checkpoint_id, old_path, new_path))
         old_cp = self._get_checkpoint_path(checkpoint_id, old_path)
@@ -146,13 +165,24 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
         self.parent.rename_file(old_cp, new_cp)
 
     def delete_checkpoint(self, checkpoint_id, path):
-        """Delete a checkpoint for a file."""
+        """
+        Delete a checkpoint for a file.
+
+        :param str checkpoint_id: A 36 character uuid4 type identifier.
+        :param str path: The path to the file from which the checkpoint was
+                         created.
+        """
         cp = self._get_checkpoint_path(checkpoint_id, path)
         self.log.info("Deleting checkpoint %s from %s" % (checkpoint_id, cp))
         self.parent.delete_file(cp)
 
     def list_checkpoints(self, path):
-        """Return a list of checkpoints for a given file."""
+        """
+        Return a list of checkpoints for a given file.
+
+        :param str path: The path to the file from which the checkpoint was
+                         created.
+        """
         self.log.info("Listing checkpoints at %s" % (path))
 
         checkpoints = []
@@ -189,11 +219,24 @@ class OnedataFSFileCheckpoints(GenericCheckpointsMixin, Checkpoints):
         return checkpoints
 
     def _get_checkpoint_path(self, checkpoint_id, path):
+        """
+        Calculate the path to a checkpoint for file with specific id.
+
+        :param str checkpoint_id: A 36 character uuid4 type identifier.
+        :param str path: The path to the file from which the checkpoint was
+                         created.
+        """
         file_name = basename(path)
         dir_path = self._get_checkpoint_dir(path)
         return join(dir_path, file_name+"."+checkpoint_id)
 
     def _get_checkpoint_dir(self, path):
+        """
+        Calculate the path to a checkpoint directory for file at `path`.
+
+        :param str path: The path to the file from which the checkpoint was
+                         created.
+        """
         return join(dirname(path), self.checkpoint_dir)
 
 
@@ -277,15 +320,8 @@ class OnedataFSContentsManager(ContentsManager):
         """
         Check if directory exists.
 
-        Parameters
-        ----------
-        path : string
-            The path to check
-        Returns
-        -------
-        exists : bool
-            Whether the path does indeed exist.
-
+        :param str path: The path to check
+        :return bool: Whther the directory exists.
         """
         if not self.odfs.exists(path):
             return False
@@ -299,16 +335,8 @@ class OnedataFSContentsManager(ContentsManager):
         """
         Check if file is hidden.
 
-        Parameters
-        ----------
-        path : string
-            The path to check. This is an API path (`/` separated,
-            relative to root dir).
-        Returns
-        -------
-        hidden : bool
-            Whether the path is hidden.
-
+        :param str path: The path to check.
+        :return bool: Whether the path is hidden.
         """
         name = os.path.basename(os.path.abspath(path))
         return name.startswith('.')
@@ -317,15 +345,8 @@ class OnedataFSContentsManager(ContentsManager):
         """
         Check if regular file exists.
 
-        Parameters
-        ----------
-        path : string
-            The API path of a file to check for.
-        Returns
-        -------
-        exists : bool
-            Whether the file exists.
-
+        :param str path: The path of a file to check for.
+        :return bool: Whether the file exists.
         """
         if not self.odfs.exists(path):
             return False
@@ -336,7 +357,12 @@ class OnedataFSContentsManager(ContentsManager):
         return True
 
     def delete_file(self, path, allow_non_empty=False):
-        """Delete the file or directory at path."""
+        """
+        Delete the file or directory at path.
+
+        :param str path: The file path to delete.
+        :param bool allow_non_empty: Whether to remove non-empty directories.
+        """
         if self.odfs.isdir(path):
             self.odfs.removetree(path)
         else:
@@ -346,14 +372,22 @@ class OnedataFSContentsManager(ContentsManager):
         """
         Rename a file or directory.
 
-        N.B. Note currently we only support renaming, not moving to another
-        folder. It's not clear that this operation can be performed using
-        rename, it doesn't seem to be exposed through jlab.
+        :param str old_path: The file path to rename.
+        :param str new_path: The new file path.
         """
         self.odfs.move(old_path, new_path)
 
     def _base_model(self, path):
-        """Build the common base of a contents model."""
+        """
+        Build the common base of a contents model.
+
+        If a file exists, at a `path`, fill the base model info based
+        on the file attributes. If not, create new from scratch.
+
+        :param str path: The file path for which base model should be
+                         created.
+        :return dict: The base model
+        """
         try:
             info = self.odfs.getinfo(path, namespaces=['details'])
             size = info.size
@@ -374,19 +408,14 @@ class OnedataFSContentsManager(ContentsManager):
         model['format'] = None
         model['mimetype'] = None
         model['size'] = size
+        model['writable'] = True
 
-        try:
-            model['writable'] = True  # TODO
-        except OSError:
-            self.log.error("Failed to check write permissions on %s", path)
-            model['writable'] = False
+        self.log.debug("Base notebook model last modified date: %s",
+                       str(last_modified))
+        self.log.debug("Base notebook model now date: %s",
+                       str(datetime.datetime.now()))
 
-        self.log.info("Base notebook model last modified date: %s",
-                      str(last_modified))
-        self.log.info("Base notebook model now date: %s",
-                      str(datetime.datetime.now()))
-
-        self.log.info("Created base notebook model: %s", str(model))
+        self.log.debug("Created base notebook model: %s", str(model))
 
         return model
 
@@ -394,7 +423,12 @@ class OnedataFSContentsManager(ContentsManager):
         """
         Build a model for a directory.
 
-        If content is requested, will include a listing of the directory
+        If content is requested, will include a listing of the directory.
+
+        :param str path: The path of the directory.
+        :param str content: Whether the result should include contents of
+                            an existing directory.
+        :return dict: Directory model.
         """
         if not self.odfs.isdir(path):
             raise web.HTTPError(404, u'directory does not exist: %r' % path)
@@ -409,18 +443,18 @@ class OnedataFSContentsManager(ContentsManager):
                     entry_path = join(path, name)
                 except UnicodeDecodeError as e:
                     self.log.warning(
-                        "failed to decode filename '%s': %s", name, e)
+                        "failed to decode filename '%s': %s", name, str(e))
                     continue
 
                 try:
                     self.odfs.getinfo(entry_path)
                 except OSError as e:
-                    # skip over broken symlinks in listing
                     if e.errno == errno.ENOENT:
-                        self.log.warning("%s doesn't exist", entry_path)
+                        self.log.warning(
+                            "%s directory doesn't exist", entry_path)
                     else:
-                        self.log.warning("Error stat-ing %s: %s",
-                                         entry_path, e)
+                        self.log.warning("Cannot stat %s: %s",
+                                         entry_path, str(e))
                     continue
 
                 contents.append(self.get(path='%s/%s' %
@@ -435,10 +469,15 @@ class OnedataFSContentsManager(ContentsManager):
         Build a model for a file.
 
         If content is requested, include the file contents.
-        format:
-          If 'text', the contents will be decoded as UTF-8.
-          If 'base64', the raw bytes contents will be encoded as base64.
-          If not specified, try to decode as UTF-8, and fall back to base64
+
+        :param str path: Path to the file.
+        :param bool content: Whether the file contents should be included
+                             in the response.
+        :param str format: Determines the file format, if `'text'` the contents
+                           will be utf-8 decoded, if `'base64'` the binary byte
+                           array will be returned, if `None` than try to decode
+                           utf-8 and if that fails return raw bytes.
+        :return dict: The file model.
         """
         model = self._base_model(path)
         model['type'] = 'file'
@@ -465,8 +504,10 @@ class OnedataFSContentsManager(ContentsManager):
         """
         Build a notebook model.
 
-        If content is requested, the notebook content will be populated
-        as a JSON structure (not double-serialized)
+        :param str path: The path to the notebook.
+        :param bool content: Whether to include in the response the notebook
+                             contents.
+        :return dict: The notebook model.
         """
         model = self._base_model(path)
         model['type'] = 'notebook'
@@ -482,26 +523,14 @@ class OnedataFSContentsManager(ContentsManager):
 
     def get(self, path, content=True, type=None, format=None):
         """
-        Take a path for an entity and returns its model.
+        Get the model of a file, directory or notebook.
 
-        Parameters
-        ----------
-        path : str
-            the API path that describes the relative path for the target
-        content : bool
-            Whether to include the contents in the reply
-        type : str, optional
-            The requested type - 'file', 'notebook', or 'directory'.
-            Will raise HTTPError 400 if the content doesn't match.
-        format : str, optional
-            The requested format for file contents. 'text' or 'base64'.
-            Ignored if this returns a notebook or directory model.
-        Returns
-        -------
-        model : dict
-            the contents model. If content=True, returns the contents
-            of the file or directory as well.
-
+        :param str path: The path to the resource.
+        :param bool content: Whether to include the contents in the response
+        :param str type: 'file', 'notebook', or 'directory'.
+        :param str format: 'text' or 'base64'.
+        :return dict: The resource model. If content=True, returns the contents
+                      of the file, notebook or directory.
         """
         if not self.exists(path):
             raise web.HTTPError(404, u'No such file or directory: %s' % path)
@@ -524,16 +553,28 @@ class OnedataFSContentsManager(ContentsManager):
         return model
 
     def _save_directory(self, path, model, spath=''):
-        """Create a directory."""
+        """
+        Create a directory.
+
+        :param str path: Path to the directory.
+        :param dict model: Model of the directory.
+        :param str spath: Not used.
+        """
         if not self.odfs.exists(path):
             self.odfs.makedir(path)
         elif not self.odfs.isdir(path):
             raise web.HTTPError(400, u'Not a directory: %s' % (path))
         else:
-            self.log.debug("Directory %r already exists", path)
+            self.log.warning("Directory %r already exists", path)
 
     def save(self, model, path=''):
-        """Save the file model and return the model with no content."""
+        """
+        Save the file model and return the model without the content.
+
+        :param dict model: The resource model to be saved.
+        :param str path: The path to the resource.
+        :return dict: Return the created model.
+        """
         if 'type' not in model:
             raise web.HTTPError(400, u'No file type provided')
         if 'content' not in model and model['type'] != 'directory':
@@ -585,7 +626,13 @@ class OnedataFSContentsManager(ContentsManager):
         return model
 
     def _save_file(self, path, content, format):
-        """Save content of a generic file."""
+        """
+        Save content of a generic file.
+
+        :param str path: The path to the file.
+        :param str content: The file contents to be saved.
+        :param str format: `text` or `base64`.
+        """
         if format not in {'text', 'base64'}:
             raise web.HTTPError(
                 400,
@@ -609,7 +656,13 @@ class OnedataFSContentsManager(ContentsManager):
             f.write(bcontent)
 
     def _read_notebook(self, path, as_version=4):
-        """Read a notebook from an os path."""
+        """
+        Read a notebook from an os path.
+
+        :param str path: Path to the notebook.
+        :param as_version: Specify the notebook version.
+        :return dict: The notebook model with contents.
+        """
         try:
             nb_bytes = self.odfs.readbytes(path)
             notebook = nbformat.reads(nb_bytes.decode('utf8'),
@@ -622,7 +675,12 @@ class OnedataFSContentsManager(ContentsManager):
             raise e
 
     def _save_notebook(self, path, nb):
-        """Save a notebook to a path."""
+        """
+        Save a notebook to a path.
+
+        :param str path: The path to the notebook.
+        :param dict nb: The notebook model.
+        """
         self.log.warning("Saving notebook model %s (ts=%s)", path, time.time())
 
         try:
@@ -662,14 +720,10 @@ class OnedataFSContentsManager(ContentsManager):
 
     def _read_file(self, path, format):
         """
-        Read a non-notebook file.
+        Read a regular file.
 
-        path: The path to be read.
-        format:
-          If 'text', the contents will be decoded as UTF-8.
-          If 'base64', the raw bytes contents will be encoded as base64.
-          If not specified, try to decode as UTF-8, and fall back to base64
-
+        :param str path: Path to the notebook.
+        :param str format: `text` or `base64`.
         """
         if not self.odfs.isfile(path):
             raise web.HTTPError(400, "Cannot read non-file %s" % path)
@@ -692,7 +746,12 @@ class OnedataFSContentsManager(ContentsManager):
         return encodebytes(bcontent).decode('ascii'), 'base64'
 
     def run_post_save_hook(self, model, os_path):
-        """Run the post-save hook if defined, and log errors."""
+        """
+        Run the post-save hook if defined, and log errors.
+
+        :param dict model: The resource model.
+        :param str os_path: The path to the file.
+        """
         if self.post_save_hook:
             try:
                 self.log.debug("Running post-save hook on %s", os_path)

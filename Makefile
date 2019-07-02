@@ -100,7 +100,7 @@ deb: check_distribution package/$(PKG_ID).tar.gz
 	sed -i "s/{{build}}/$(PKG_BUILD)/g" package/$(PKG_ID)/debian/changelog
 	sed -i "s/{{distribution}}/$(DISTRIBUTION)/g" package/$(PKG_ID)/debian/changelog
 	sed -i "s/{{date}}/`date -R`/g" package/$(PKG_ID)/debian/changelog
-	sed -i "s/{{onedatafs_version}}/$(ONECLIENT_VERSION)/g" package/$(PKG_ID)/debian/control
+	sed -i "s/{{fsonedatafs_version}}/$(FSONEDATAFS_VERSION)/g" package/$(PKG_ID)/debian/control
 
 	cd package/$(PKG_ID) && sg sbuild -c "sbuild -sd $(DISTRIBUTION) -j$$(nproc)"
 	mv package/*$(PKG_VERSION).orig.tar.gz package/packages/

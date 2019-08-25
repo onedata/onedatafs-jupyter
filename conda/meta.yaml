@@ -18,6 +18,7 @@ requirements:
   run:
     - python {{ python }}
     - notebook
+    - fs =2.4.10
     - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
 
 test:

@@ -122,7 +122,8 @@ conda: package/$(PKG_ID).tar.gz
 	sed -i "s|<<PKG_SOURCE>>|../$(PKG_ID).tar.gz|g" package/conda/meta.yaml
 	source /opt/conda/bin/activate base && \
 		PKG_VERSION=$(PKG_VERSION) CONDA_BLD_PATH=$$PWD/package/conda-bld \
-		conda build --user onedata-devel --token "${CONDA_TOKEN}" package/conda
+		conda build --user onedata-devel --token "${CONDA_TOKEN}" ${CONDA_BUILD_OPTIONS} \
+		package/conda
 
 .PHONY: docker
 docker:

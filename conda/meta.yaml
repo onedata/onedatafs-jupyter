@@ -13,6 +13,8 @@ requirements:
   build:
     - python {{ python }}
     - setuptools
+    - notebook
+    - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
   run:
     - python {{ python }}
     - notebook

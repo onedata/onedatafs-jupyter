@@ -121,6 +121,7 @@ conda: package/$(PKG_ID).tar.gz
 	sed -i "s|<<FSONEDATAFS_VERSION>>|$(FSONEDATAFS_VERSION)|g" package/conda/meta.yaml
 	sed -i "s|<<PKG_SOURCE>>|../$(PKG_ID).tar.gz|g" package/conda/meta.yaml
 	source /opt/conda/bin/activate base && \
+		conda config --set skip_existing False && \
 		PKG_VERSION=$(PKG_VERSION) CONDA_BLD_PATH=$$PWD/package/conda-bld \
 		conda build --user onedata-devel --token "${CONDA_TOKEN}" package/conda
 

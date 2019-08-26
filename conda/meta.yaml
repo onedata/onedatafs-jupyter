@@ -1,0 +1,35 @@
+{% set name = "onedatafs-jupyter" %}
+{% set version = "<<PKG_VERSION>>" %}
+{% set fsonedatafs_version = "<<FSONEDATAFS_VERSION>>" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version|replace('-', '.') }}
+
+source:
+  url: "<<PKG_SOURCE>>"
+
+requirements:
+  build:
+    - python {{ python }}
+    - setuptools
+    - notebook
+    - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
+  run:
+    - python {{ python }}
+    - notebook
+    - fs =2.4.10
+    - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
+
+test:
+  commands:
+    - python -c "from onedatafs_jupyter import OnedataFSContentsManager"
+
+about:
+  home: https://onedata.org
+  license: MIT
+  summary: onedatafs-jupyter is a PyFilesystem based Contents Manager plugin for Jupyter Notebook.
+
+extra:
+  recipe-maintainers:
+    - bkryza

@@ -8,6 +8,10 @@ ARG DISTRIBUTION="bionic"
 ARG ONECLIENT_VERSION=""
 ARG FSONEDATAFS_VERSION=""
 ARG ONEDATAFS_JUPYTER_VERSION=""
+ARG HTTP_PROXY
+
+# Enable Onedata devel package proxy cache
+ENV http_proxy ${HTTP_PROXY}
 
 # Get the image up to date and install utility tools
 RUN apt-get -y update && \
@@ -27,10 +31,10 @@ WORKDIR /tmp
 # Install oneclient package
 RUN case ${RELEASE_TYPE} in \
         production) \
-            curl -O http://get.onedata.org/oneclient-${RELEASE}.sh; \
+            curl -O http://packages.onedata.org/oneclient-${RELEASE}.sh; \
             ;; \
         *) \
-            curl -O http://onedata-dev-packages.cloud.plgrid.pl/oneclient-${RELEASE}.sh; \
+            curl -O http://packages.devel.onedata.org/oneclient-${RELEASE}.sh; \
             ;; \
         esac && \
         sh oneclient-${RELEASE}.sh python-onedatafs=${ONECLIENT_VERSION}-1~${DISTRIBUTION} && \

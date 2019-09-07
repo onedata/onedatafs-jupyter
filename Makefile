@@ -7,6 +7,7 @@ DOCKER_REG_USER       ?= ""
 DOCKER_REG_PASSWORD   ?= ""
 DOCKER_BASE_IMAGE     ?= "ubuntu:16.04"
 DOCKER_DEV_BASE_IMAGE ?= "onedata/worker:1802-1"
+HTTP_PROXY            ?= "http://proxy.devel.onedata.org:3128"
 
 PKG_REVISION              ?= $(shell git describe --tags --always)
 PKG_VERSION               ?= $(shell git describe --tags --always | tr - .)
@@ -134,4 +135,5 @@ docker:
                       --build-arg ONEDATAFS_JUPYTER_VERSION=$(PKG_VERSION) \
                       --build-arg ONECLIENT_VERSION=$(ONECLIENT_VERSION) \
                       --build-arg FSONEDATAFS_VERSION=$(FSONEDATAFS_VERSION) \
+                      --build-arg HTTP_PROXY=$(HTTP_PROXY) \
                       --name onedatafs-jupyter --publish --remove docker

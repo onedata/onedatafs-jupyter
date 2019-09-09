@@ -53,4 +53,7 @@ RUN mkdir /notebooks
 
 WORKDIR /notebooks
 
+# Disable http_proxy for normal operation
+ENV http_proxy ""
+
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root", "--ip=0.0.0.0"]

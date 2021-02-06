@@ -1,8 +1,11 @@
-Release notes for project onedatafs-jupyter
-===========================================
+# Release notes for project onedatafs-jupyter
 
-CHANGELOG
----------
+## CHANGELOG
+
+### 20.02.6
+
+-   **VFS-7119** Dropped support for OnedataFS Anaconda packages for
+    Python 2, due to Python 2 EOL.
 
 ### 20.02.5
 

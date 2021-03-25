@@ -14,6 +14,8 @@ CHANGELOG
 
 ### 21.02.0-alpha2
 
+### 20.02.7
+
 ### 20.02.6
 
 -   **VFS-7119** Dropped support for OnedataFS Anaconda packages for

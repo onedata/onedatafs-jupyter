@@ -1,8 +1,8 @@
-Release notes for project onedatafs-jupyter
-===========================================
+# Release notes for project onedatafs-jupyter
 
-CHANGELOG
----------
+## CHANGELOG
+
+### 21.02.0-alpha10
 
 ### 21.02.0-alpha9
 

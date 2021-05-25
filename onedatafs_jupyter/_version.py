@@ -5,4 +5,4 @@ __copyright__ = "Copyright (C) 2019 ACK CYFRONET AGH"
 __license__ = "This software is released under the MIT license cited in " \
               "LICENSE.txt"
 
-__version__ = '21.02.0-alpha10'
+__version__ = '21.02.0-alpha11'

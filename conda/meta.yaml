@@ -11,14 +11,14 @@ source:
 
 requirements:
   build:
-    - python {{ python }}
-    - setuptools
-    - notebook
+    - conda-forge::python {{ python }}
+    - conda-forge::setuptools
+    - conda-forge::notebook
     - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
   run:
-    - python {{ python }}
-    - notebook
-    - fs =2.4.10
+    - conda-forge::python {{ python }}
+    - conda-forge::notebook
+    - conda-forge::fs
     - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
 
 test:

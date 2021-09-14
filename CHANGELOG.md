@@ -4,6 +4,8 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 20.02.13
+
 ### 20.02.12
 
 ### 20.02.11

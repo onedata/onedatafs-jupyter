@@ -17,7 +17,7 @@ ENV http_proxy ${HTTP_PROXY}
 RUN apt-get -y update && \
     apt-get -y install bash-completion ca-certificates curl iputils-ping netcat \
                        man-db net-tools traceroute vim python-xattr parallel \
-                       python3-pip && \
+                       python3-pip zlib1g-dev libtiff-dev libjpeg-dev && \
     apt-get clean
 
 # Install fs.onedatafs dependencies

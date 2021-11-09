@@ -4,6 +4,8 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 21.02.0-alpha22
+
 ### 21.02.0-alpha21
 
 ### 21.02.0-alpha20
@@ -41,6 +43,8 @@ CHANGELOG
 ### 21.02.0-alpha3
 
 ### 21.02.0-alpha2
+
+### 20.02.14
 
 ### 20.02.13
 

@@ -4,6 +4,8 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 21.02.0-alpha24
+
 ### 21.02.0-alpha23
 
 -   **VFS-8318** Fixed conda packaging for oneclient and onedatafs,

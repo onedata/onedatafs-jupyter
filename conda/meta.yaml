@@ -11,16 +11,17 @@ source:
 
 requirements:
   build:
-    - conda-forge::python {{ python }}
+    - python {{ python }}
     - conda-forge::setuptools
     - conda-forge::notebook
     - conda-forge::fs =2.4.*
-    - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
+    - fs.onedatafs ={{ version|replace('-', '.') }}
   run:
-    - conda-forge::python {{ python }}
+    - python {{ python }}
     - conda-forge::notebook
     - conda-forge::fs =2.4.*
-    - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
+    - conda-forge::libfuse =2.9.9
+    - fs.onedatafs ={{ version|replace('-', '.') }}
 
 test:
   commands:

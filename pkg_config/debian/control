@@ -2,16 +2,9 @@ Source: onedatafs-jupyter
 Maintainer: Bartek Kryza <bkryza@gmail.com>
 Section: python
 Priority: optional
-Build-Depends: dh-python, git, python-setuptools (>= 0.6b3), python-all, python3-all, python-tox, python-pip, python3-pip, debhelper (>= 9)
+Build-Depends: dh-python, git, python-setuptools (>= 0.6b3), python3-all, python3-tox, python3-pip, python3-pip, debhelper (>= 9)
 Standards-Version: 3.9.6
 Homepage: https://github.com/onedata/onedatafs-jupyter
-
-Package: python-onedatafs-jupyter
-Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-fs-plugin-onedatafs (>= {{fsonedatafs_version}})
-Description: Onedata filesystem Jupyter plugin
- OnedataFS plugin for Jupyter implements Jupyter Content Manager API,
- enabling running Jupyter notebooks directly within a Onedata data space.
 
 Package: python3-onedatafs-jupyter
 Architecture: all

@@ -53,6 +53,11 @@ CHANGELOG
 
 ### 21.02.0-alpha2
 
+### 20.02.16
+
+-   **VFS-8828** Fixed conda packages for the stable branch 20.02.\*,
+    starting with version 20.02.15 and Python 3.9.
+
 ### 20.02.15
 
 ### 20.02.14

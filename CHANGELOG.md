@@ -4,6 +4,13 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 21.02.0-alpha25
+
+-   **VFS-8872** Dropped support for Python2 in OnedataFS.
+-   **VFS-8862** Update conda package dependencies to conda-forge and
+    Python 3.9.
+
+
 ### 21.02.0-alpha24
 
 ### 21.02.0-alpha23

@@ -22,6 +22,9 @@ requirements:
     - conda-forge::fs =2.4.*
     - conda-forge::libfuse =2.9.9
     - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
+    - conda-forge::poco =1.11.1
+    - conda-forge::boost =1.78.0
+    - conda-forge::boost-cpp =1.78.0 h75c5d50_1
 
 test:
   commands:

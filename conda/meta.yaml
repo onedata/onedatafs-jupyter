@@ -20,7 +20,10 @@ requirements:
     - conda-forge::notebook
     - conda-forge::fs
     - fs.onedatafs ={{ fsonedatafs_version|replace('-', '.') }}
-
+    - conda-forge::poco =1.11.1
+    - conda-forge::boost =1.78.0
+    - conda-forge::boost-cpp =1.78.0 h75c5d50_1
+    
 test:
   commands:
     - python -c "from onedatafs_jupyter import OnedataFSContentsManager"

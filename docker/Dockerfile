@@ -21,6 +21,7 @@ RUN apt-get -y update && \
     apt-get clean
 
 # Install fs.onedatafs dependencies
+RUN pip3 install setuptools_scm==6.2.0 argon2-cffi-bindings==21.1.0
 RUN pip3 install fs six setuptools
 RUN pip3 install jupyter Pillow scipy pandas matplotlib
 

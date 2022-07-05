@@ -4,6 +4,12 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 21.02.0-alpha26
+
+-   **VFS-9424** Fixed broken dependencies in Oneclient Conda packages.
+-   **VFS-8828** Fixed conda packages for the stable branch 20.02.\*,
+    starting with version 20.02.15 and Python 3.9.
+
 ### 21.02.0-alpha25
 
 -   **VFS-8872** Dropped support for Python2 in OnedataFS.

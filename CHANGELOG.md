@@ -4,6 +4,8 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 20.02.18
+
 ### 20.02.17
 
 -   **VFS-9424** Fixed broken dependencies in Oneclient Conda packages.

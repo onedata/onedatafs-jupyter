@@ -104,6 +104,7 @@ ENV/
 .mypy_cache/
 
 .vscode
+*.iml
 
 
 package

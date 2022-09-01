@@ -3,7 +3,7 @@ MAINTAINER Bartek Kryza <bkryza@gmail.com>
 
 # Build arguments
 ARG RELEASE_TYPE
-ARG RELEASE="2002"
+ARG RELEASE="2102"
 ARG DISTRIBUTION="bionic"
 ARG ONECLIENT_VERSION=""
 ARG FSONEDATAFS_VERSION=""
@@ -21,6 +21,7 @@ RUN apt-get -y update && \
     apt-get clean
 
 # Install fs.onedatafs dependencies
+RUN pip3 install setuptools_scm==6.2.0 argon2-cffi-bindings==21.1.0
 RUN pip3 install fs six setuptools
 RUN pip3 install jupyter Pillow scipy pandas matplotlib
 

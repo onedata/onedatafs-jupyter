@@ -6,7 +6,7 @@ DOCKER_REG_NAME       ?= "docker.onedata.org"
 DOCKER_REG_USER       ?= ""
 DOCKER_REG_PASSWORD   ?= ""
 DOCKER_BASE_IMAGE     ?= "ubuntu:20.04"
-DOCKER_DEV_BASE_IMAGE ?= "onedata/worker:2102-7"
+DOCKER_DEV_BASE_IMAGE ?= "onedata/worker:2102-8"
 HTTP_PROXY            ?= "http://proxy.devel.onedata.org:3128"
 
 PKG_REVISION              ?= $(shell git describe --tags --always)

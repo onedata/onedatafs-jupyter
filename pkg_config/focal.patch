@@ -1,0 +1,20 @@
+diff --git a/pkg_config/debian/control b/pkg_config/debian/control
+index 99e11d6..3ab6d7f 100644
+--- a/debian/control
++++ b/debian/control
+@@ -2,7 +2,7 @@ Source: fs-onedatafs
+ Maintainer: Bartek Kryza <bkryza@gmail.com>
+ Section: python
+ Priority: optional
+-Build-Depends: dh-python, git, python-setuptools (>= 0.6b3), python3-all, python-tox, python3-pip, debhelper (>= 9)
++Build-Depends: dh-python, git, python-setuptools (>= 0.6b3), python3-all, tox, python3-pip, debhelper (>= 9)
+ Standards-Version: 3.9.6
+ Homepage: https://github.com/onedata/fs-onedatafs
+
+diff --git a/debian/python3-onedatafs-jupyter.install b/debian/python3-onedatafs-jupyter.install
+index 8949d75..452be65 100644
+--- a/debian/python3-onedatafs-jupyter.install
++++ b/debian/python3-onedatafs-jupyter.install
+@@ -1,1 +1,1 @@
+-.pybuild/pythonX.Y_3.5/build/onedatafs_jupyter/* usr/lib/python3.5/dist-packages/onedatafs_jupyter
++.pybuild/cpython3_3.8_onedatafs-jupyter/build/onedatafs_jupyter/* usr/lib/python3.8/dist-packages/onedatafs_jupyter

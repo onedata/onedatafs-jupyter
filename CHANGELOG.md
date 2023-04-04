@@ -4,6 +4,11 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
+### 21.02.1
+
+-   **VFS-9622** Upgraded the base image for release dockers from Ubuntu
+    18.04 to Ubuntu 20.04.
+
 ### 21.02.0-alpha28
 
 ### 21.02.0-alpha27

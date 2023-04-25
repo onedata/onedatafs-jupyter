@@ -4,73 +4,17 @@ Release notes for project onedatafs-jupyter
 CHANGELOG
 ---------
 
-### 21.02.0-alpha28
+### 21.02.1
 
-### 21.02.0-alpha27
-
-### 21.02.0-alpha26
-
--   **VFS-9424** Fixed broken dependencies in Oneclient Conda packages.
--   **VFS-8828** Fixed conda packages for the stable branch 20.02.\*,
-    starting with version 20.02.15 and Python 3.9.
-
-### 21.02.0-alpha25
-
+-   **VFS-9622** Upgraded the base image for release dockers from Ubuntu
+    18.04 to Ubuntu 20.04.
 -   **VFS-8872** Dropped support for Python2 in OnedataFS.
 -   **VFS-8862** Update conda package dependencies to conda-forge and
     Python 3.9.
-
-
-### 21.02.0-alpha24
-
-### 21.02.0-alpha23
-
 -   **VFS-8318** Fixed conda packaging for oneclient and onedatafs,
     switched dependencies to conda-forge channel.
 -   **VFS-8073** Upgrade folly, wangle and proxygen libraries to version
     2021.01.04.00.
-
-### 21.02.0-alpha22
-
-### 21.02.0-alpha21
-
-### 21.02.0-alpha20
-
-### 21.02.0-alpha19
-
-### 21.02.0-alpha18
-
-### 21.02.0-alpha17
-
-### 21.02.0-alpha16
-
-### 21.02.0-alpha14
-
-### 21.02.0-alpha13
-
-### 21.02.0-alpha12
-
-### 21.02.0-alpha11
-
-### 21.02.0-alpha10
-
-### 21.02.0-alpha9
-
-### 21.02.0-alpha8
-
-### 21.02.0-alpha7
-
-### 21.02.0-alpha6
-
-### 21.02.0-alpha5
-
-### 21.02.0-alpha4
-
-### 21.02.0-alpha3
-
-### 21.02.0-alpha2
-
-### 20.02.20
 
 ### 20.02.19
 
